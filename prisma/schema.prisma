@@ -1,0 +1,148 @@
+// Prisma schema for Credit Management application
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum BorrowerStatus {
+  AKTIF
+  TIDAK_AKTIF
+}
+
+enum LoanStatus {
+  DRAFT
+  AKTIF
+  LUNAS
+  DIBATALKAN
+}
+
+enum InstallmentStatus {
+  BELUM_JATUH_TEMPO
+  JATUH_TEMPO
+  TERLAMBAT
+  LUNAS
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String
+  email         String    @unique
+  emailVerified Boolean   @default(false)
+  image         String?
+  role          String    @default("admin")
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  sessions      Session[]
+  accounts      Account[]
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  token     String   @unique
+  expiresAt DateTime
+  ipAddress String?
+  userAgent String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Account {
+  id                    String    @id @default(cuid())
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accountId             String
+  providerId            String
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+}
+
+model Borrower {
+  id             String         @id @default(cuid())
+  name           String
+  phone          String
+  identityNumber String?
+  address        String?
+  occupation     String?
+  businessName   String?
+  notes          String?
+  status         BorrowerStatus @default(AKTIF)
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  loans          Loan[]
+}
+
+model LoanTerm {
+  id           String   @id @default(cuid())
+  name         String
+  months       Int
+  interestRate Float
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  loans        Loan[]
+}
+
+model Loan {
+  id                 String        @id @default(cuid())
+  loanNumber         String        @unique
+  borrowerId         String
+  borrower           Borrower      @relation(fields: [borrowerId], references: [id])
+  principalAmount    Int
+  interestRate       Float
+  interestAmount     Int
+  totalAmount        Int
+  monthlyInstallment Int
+  termMonths         Int
+  disbursementDate   DateTime
+  firstDueDate       DateTime
+  purpose            String?
+  notes              String?
+  status             LoanStatus    @default(AKTIF)
+  createdAt          DateTime      @default(now())
+  updatedAt          DateTime      @updatedAt
+  installments       Installment[]
+  loanTerm           LoanTerm?     @relation(fields: [loanTermId], references: [id])
+  loanTermId         String?
+}
+
+model Installment {
+  id                String            @id @default(cuid())
+  loanId            String
+  loan              Loan              @relation(fields: [loanId], references: [id])
+  installmentNumber Int
+  dueDate           DateTime
+  amount            Int
+  paidAmount        Int               @default(0)
+  paidAt            DateTime?
+  status            InstallmentStatus @default(BELUM_JATUH_TEMPO)
+  notes             String?
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+  payments          Payment[]
+}
+
+model Payment {
+  id            String      @id @default(cuid())
+  installmentId String
+  installment   Installment @relation(fields: [installmentId], references: [id])
+  amount        Int
+  paidAt        DateTime
+  notes         String?
+  receipt       String?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+}

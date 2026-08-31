@@ -1,0 +1,154 @@
+
+> credit-management@0.1.0 build
+> next build
+
+▲ Next.js 16.3.1 (Turbopack)
+- Environments: .env
+✓ Running next.config.ts took 28ms
+
+⚠ The "middleware" file convention is deprecated. Please use "proxy" instead.
+
+  To migrate automatically, run:
+  npx @next/codemod@canary middleware-to-proxy .
+
+  Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+  Creating an optimized production build ...
+✓ Compiled successfully in 5.2s
+  Running TypeScript ...
+  Finished TypeScript in 5.6s ...
+  Collecting page data using 23 workers ...
+  Generating static pages using 23 workers (0/7) ...
+  Generating static pages using 23 workers (1/7) 
+  Generating static pages using 23 workers (3/7) 
+  Generating static pages using 23 workers (5/7) 
+✓ Generating static pages using 23 workers (7/7) in 977ms
+Turbopack build encountered 4 warnings:
+./src/lib/file.ts:404:13
+Warning: Dynamic filesystem access causes tracing of the whole project
+  [90m402 |[0m
+  [90m403 |[0m     [36mconst[0m buffer =
+[33m[1m>[0m [90m404 |[0m       [36mawait[0m fs.readFile(absolutePath);
+  [90m    |[0m             [33m[1m^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m405 |[0m
+  [90m406 |[0m     [36mconst[0m ext = path
+  [90m407 |[0m       .extname(absolutePath)
+
+Static analysis determined that this filesystem access causes the whole project to be traced and included in the output.
+This is usually unintentional and leads to all source files (including the public folder) to be deployed as part of the server code.
+This can slow down deployments or lead to failures when size limits are exceeded.
+To resolve this, you can
+- make sure the path is statically scoped to some subfolder, for example path.join(process.cwd(), 'data', bar), or
+- only use them in development, or
+- opt out by adding an ignore comment to the highlighted call: fs.readFile(/*turbopackIgnore: true*/ ...), or
+- remove them.
+
+Import trace:
+  Server Component:
+    ./src/lib/file.ts
+    ./src/lib/actions/payment-actions.ts
+
+
+./src/lib/file.ts:74:7
+Warning: Dynamic filesystem access causes tracing of the whole project
+  [90m72 |[0m
+  [90m73 |[0m   [36mreturn[0m safeDirectory
+[33m[1m>[0m [90m74 |[0m     ? path.join(baseDir, safeDirectory)
+  [90m   |[0m       [33m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m75 |[0m     : baseDir;
+  [90m76 |[0m };
+  [90m77 |[0m
+
+Static analysis determined that this filesystem access causes the whole project to be traced and included in the output.
+This is usually unintentional and leads to all source files (including the public folder) to be deployed as part of the server code.
+This can slow down deployments or lead to failures when size limits are exceeded.
+To resolve this, you can
+- make sure the path is statically scoped to some subfolder, for example path.join(process.cwd(), 'data', bar), or
+- only use them in development, or
+- opt out by adding an ignore comment to the highlighted call: path.join(/*turbopackIgnore: true*/ ...), or
+- remove them.
+
+Import trace:
+  Server Component:
+    ./src/lib/file.ts
+    ./src/lib/actions/payment-actions.ts
+
+
+./src/lib/file.ts:214:21
+Warning: Dynamic filesystem access causes tracing of the whole project
+  [90m212 |[0m ): [33mPromise[0m<boolean> => {
+  [90m213 |[0m   [36mtry[0m {
+[33m[1m>[0m [90m214 |[0m     [36mconst[0m baseDir = path.resolve(getStorageRoot());
+  [90m    |[0m                     [33m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m215 |[0m
+  [90m216 |[0m     [36mconst[0m absolutePath = path.resolve(
+  [90m217 |[0m       baseDir,
+
+Static analysis determined that this filesystem access causes the whole project to be traced and included in the output.
+This is usually unintentional and leads to all source files (including the public folder) to be deployed as part of the server code.
+This can slow down deployments or lead to failures when size limits are exceeded.
+To resolve this, you can
+- make sure the path is statically scoped to some subfolder, for example path.join(process.cwd(), 'data', bar), or
+- only use them in development, or
+- opt out by adding an ignore comment to the highlighted call: path.resolve(/*turbopackIgnore: true*/ ...), or
+- remove them.
+
+Import trace:
+  Server Component:
+    ./src/lib/file.ts
+    ./src/lib/actions/payment-actions.ts
+
+
+./src/lib/file.ts:247:19
+Warning: Dynamic filesystem access causes tracing of the whole project
+  [90m245 |[0m   filePath: string
+  [90m246 |[0m ): string => {
+[33m[1m>[0m [90m247 |[0m   [36mconst[0m baseDir = path.resolve(getStorageRoot());
+  [90m    |[0m                   [33m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m248 |[0m
+  [90m249 |[0m   [36mconst[0m absolutePath = path.resolve(
+  [90m250 |[0m     baseDir,
+
+Static analysis determined that this filesystem access causes the whole project to be traced and included in the output.
+This is usually unintentional and leads to all source files (including the public folder) to be deployed as part of the server code.
+This can slow down deployments or lead to failures when size limits are exceeded.
+To resolve this, you can
+- make sure the path is statically scoped to some subfolder, for example path.join(process.cwd(), 'data', bar), or
+- only use them in development, or
+- opt out by adding an ignore comment to the highlighted call: path.resolve(/*turbopackIgnore: true*/ ...), or
+- remove them.
+
+Import trace:
+  Server Component:
+    ./src/lib/file.ts
+    ./src/lib/actions/payment-actions.ts
+
+
+  Finalizing page optimization ...
+
+Route (app)
+┌ ƒ /
+├ ƒ /_not-found
+├ ƒ /api/auth/[...all]
+├ ƒ /api/export
+├ ƒ /api/export/count
+├ ƒ /borrowers
+├ ƒ /borrowers/[id]
+├ ƒ /borrowers/[id]/edit
+├ ƒ /borrowers/new
+├ ƒ /export
+├ ƒ /loans
+├ ƒ /loans/[id]
+├ ƒ /loans/new
+├ ƒ /login
+├ ƒ /payments
+├ ƒ /reports
+├ ƒ /settings
+├ ƒ /terms
+├ ƒ /terms/[id]/edit
+└ ƒ /terms/new
+
+
+ƒ Proxy (Middleware)
+
+ƒ  (Dynamic)  server-rendered on demand
+

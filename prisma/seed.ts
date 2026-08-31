@@ -37,8 +37,8 @@ async function createLoan(input: SeedLoanInput) {
     where: { id: input.loanTermId },
   });
 
-  const calc = calculateLoan(input.principal, term.interestRate, term.months);
-  const dueDates = generateDueDates(input.firstDueDate, term.months);
+  const calc = calculateLoan(input.principal, term.interestRate, term.period, term.months);
+  const dueDates = generateDueDates(input.firstDueDate, term.period, term.months);
 
   const loanCount = await prisma.loan.count();
   const loanNumber = `LN-${String(loanCount + 1).padStart(6, "0")}`;
@@ -52,8 +52,9 @@ async function createLoan(input: SeedLoanInput) {
       interestRate: calc.interestRate,
       interestAmount: calc.interestAmount,
       totalAmount: calc.totalAmount,
-      monthlyInstallment: calc.monthlyInstallment,
-      termMonths: calc.tenorMonths,
+      monthlyInstallment: calc.installmentAmount,
+      termMonths: calc.tenorPeriods,
+      period: term.period,
       disbursementDate: input.disbursementDate,
       firstDueDate: input.firstDueDate,
       purpose: input.purpose,
@@ -62,7 +63,7 @@ async function createLoan(input: SeedLoanInput) {
     },
   });
 
-  for (let i = 0; i < calc.tenorMonths; i++) {
+  for (let i = 0; i < calc.tenorPeriods; i++) {
     const isPaid = input.paidOff || i < input.paidCount;
     const paidAt = isPaid ? new Date(dueDates[i]) : null;
     if (paidAt) paidAt.setHours(10, 0, 0, 0);
@@ -130,6 +131,14 @@ async function main() {
   });
   const term12 = await prisma.loanTerm.create({
     data: { name: "12 Bulan", months: 12, interestRate: 25, isActive: true },
+  });
+
+  // --- Weekly Loan Terms ---
+  const term12W = await prisma.loanTerm.create({
+    data: { name: "12 Minggu", months: 12, period: "MINGGUAN", interestRate: 12, isActive: true },
+  });
+  const term24W = await prisma.loanTerm.create({
+    data: { name: "24 Minggu", months: 24, period: "MINGGUAN", interestRate: 20, isActive: true },
   });
 
   // --- Borrowers ---
@@ -329,6 +338,30 @@ async function main() {
     purpose: "Modal awal warung",
     paidCount: 3,
     paidOff: true,
+  });
+
+  // --- Weekly loans ---
+
+  // Active weekly loan: Dewi, 12 minggu, 6 paid
+  await createLoan({
+    borrowerId: dewi.id,
+    loanTermId: term12W.id,
+    principal: 3000000,
+    disbursementDate: daysFromNow(-70),
+    firstDueDate: daysFromNow(-63),
+    purpose: "Modal usaha mingguan",
+    paidCount: 6,
+  });
+
+  // Active weekly loan: Maya, 24 minggu, 2 paid
+  await createLoan({
+    borrowerId: maya.id,
+    loanTermId: term24W.id,
+    principal: 5000000,
+    disbursementDate: daysFromNow(-28),
+    firstDueDate: daysFromNow(-21),
+    purpose: "Setoran harian / mingguan",
+    paidCount: 2,
   });
 
   console.log("Seeding complete!");

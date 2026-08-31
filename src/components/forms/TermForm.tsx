@@ -1,11 +1,11 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 import Link from "next/link";
 import { createLoanTerm, updateLoanTerm } from "@/lib/actions/term-actions";
 import type { LoanTermModel } from "@/generated/prisma/models";
 import { Button } from "@/components/ui/Button";
-import { Field, Input } from "@/components/ui/Form";
+import { Field, Input, Select } from "@/components/ui/Form";
 
 interface TermFormProps {
   loanTerm?: LoanTermModel;
@@ -20,6 +20,11 @@ export function TermForm({ loanTerm }: TermFormProps) {
     error: "",
     fieldErrors: {},
   });
+
+  const [period, setPeriod] = useState<"BULANAN" | "MINGGUAN">(
+    loanTerm?.period ?? "BULANAN"
+  );
+  const unitCapitalized = period === "MINGGUAN" ? "Minggu" : "Bulan";
 
   return (
     <form action={formAction} className="space-y-6">
@@ -36,11 +41,28 @@ export function TermForm({ loanTerm }: TermFormProps) {
             name="name"
             defaultValue={loanTerm?.name ?? ""}
             error={!!state.fieldErrors?.name}
-            placeholder="Contoh: 6 Bulan"
+            placeholder={`Contoh: 6 ${unitCapitalized}`}
           />
         </Field>
 
-        <Field label="Jumlah Bulan" htmlFor="months" required error={state.fieldErrors?.months}>
+        <Field label="Jenis Cicilan" htmlFor="period" required>
+          <Select
+            id="period"
+            name="period"
+            value={period}
+            onChange={(e) => setPeriod(e.target.value as "BULANAN" | "MINGGUAN")}
+          >
+            <option value="BULANAN">Bulanan</option>
+            <option value="MINGGUAN">Mingguan</option>
+          </Select>
+        </Field>
+
+        <Field
+          label={`Jumlah ${unitCapitalized}`}
+          htmlFor="months"
+          required
+          error={state.fieldErrors?.months}
+        >
           <Input
             id="months"
             name="months"

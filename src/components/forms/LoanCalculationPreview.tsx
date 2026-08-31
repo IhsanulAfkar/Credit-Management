@@ -2,27 +2,29 @@
 
 import { useMemo } from "react";
 import { calculateLoan } from "@/lib/loan-calculator";
-import { formatRupiah, formatPercent, formatNumber } from "@/lib/format";
+import { formatRupiah, formatPercent, formatNumber, tenorUnitLabel, installmentPeriodLabel } from "@/lib/format";
 
 interface LoanCalculationPreviewProps {
   principal: number;
   interestRate: number;
-  tenorMonths: number;
+  period: "BULANAN" | "MINGGUAN";
+  tenorPeriods: number;
 }
 
 export function LoanCalculationPreview({
   principal,
   interestRate,
-  tenorMonths,
+  period,
+  tenorPeriods,
 }: LoanCalculationPreviewProps) {
   const calc = useMemo(() => {
-    if (principal <= 0 || tenorMonths <= 0 || interestRate < 0) return null;
+    if (principal <= 0 || tenorPeriods <= 0 || interestRate < 0) return null;
     try {
-      return calculateLoan(principal, interestRate, tenorMonths);
+      return calculateLoan(principal, interestRate, period, tenorPeriods);
     } catch {
       return null;
     }
-  }, [principal, interestRate, tenorMonths]);
+  }, [principal, interestRate, period, tenorPeriods]);
 
   if (!calc) {
     return (
@@ -34,13 +36,13 @@ export function LoanCalculationPreview({
 
   const rows = [
     { label: "Jumlah Pinjaman", value: formatRupiah(calc.principal) },
-    { label: "Tenor", value: `${formatNumber(calc.tenorMonths)} bulan` },
+    { label: "Tenor", value: `${formatNumber(calc.tenorPeriods)} ${tenorUnitLabel(calc.period)}` },
     { label: "Bunga", value: formatPercent(calc.interestRate) },
     { label: "Total Bunga", value: formatRupiah(calc.interestAmount) },
     { label: "Total Pembayaran", value: formatRupiah(calc.totalAmount) },
     {
-      label: "Cicilan / Bulan",
-      value: formatRupiah(calc.monthlyInstallment),
+      label: `Cicilan / ${installmentPeriodLabel(calc.period)}`,
+      value: formatRupiah(calc.installmentAmount),
       highlight: true,
     },
   ];

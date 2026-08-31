@@ -57,6 +57,12 @@ export default async function NewLoanPage({ searchParams }: NewLoanPageProps) {
                 <li className="flex gap-2">
                   <span className="mt-0.5 text-slate-400">•</span>
                   <span>
+                    Pilih jenis cicilan <strong>bulanan</strong> atau <strong>mingguan</strong> — tenor yang tersedia mengikuti jenis yang dipilih.
+                  </span>
+                </li>
+                <li className="flex gap-2">
+                  <span className="mt-0.5 text-slate-400">•</span>
+                  <span>
                     Jadwal cicilan otomatis dibuat sebanyak tenor pinjaman.
                   </span>
                 </li>

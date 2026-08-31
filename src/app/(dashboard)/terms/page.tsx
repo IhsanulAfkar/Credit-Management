@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/Badge";
 import { ToggleTerm } from "@/components/terms/ToggleTerm";
 import { DeleteTerm } from "@/components/terms/DeleteTerm";
 import { formatPercent } from "@/lib/format";
+import { InstallmentPeriodBadge } from "@/components/StatusBadges";
 
 export const dynamic = "force-dynamic";
 
@@ -45,7 +46,8 @@ export default async function TermsPage() {
               <thead className="bg-slate-50">
                 <tr>
                   <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">Nama</th>
-                  <th className="px-5 py-3 text-center text-xs font-semibold uppercase tracking-wide text-slate-500">Bulan</th>
+                  <th className="px-5 py-3 text-center text-xs font-semibold uppercase tracking-wide text-slate-500">Tipe</th>
+                  <th className="px-5 py-3 text-center text-xs font-semibold uppercase tracking-wide text-slate-500">Jumlah</th>
                   <th className="px-5 py-3 text-right text-xs font-semibold uppercase tracking-wide text-slate-500">Bunga</th>
                   <th className="px-5 py-3 text-center text-xs font-semibold uppercase tracking-wide text-slate-500">Digunakan</th>
                   <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">Status</th>
@@ -59,6 +61,9 @@ export default async function TermsPage() {
                     <tr key={term.id} className="hover:bg-slate-50">
                       <td className="whitespace-nowrap px-5 py-3 text-sm font-medium text-slate-900">
                         {term.name}
+                      </td>
+                      <td className="whitespace-nowrap px-5 py-3 text-center">
+                        <InstallmentPeriodBadge period={term.period} />
                       </td>
                       <td className="whitespace-nowrap px-5 py-3 text-center text-sm text-slate-600">
                         {term.months}

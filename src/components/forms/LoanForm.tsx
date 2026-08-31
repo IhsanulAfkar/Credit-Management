@@ -8,10 +8,13 @@ import { Button } from "@/components/ui/Button";
 import { Field, Input, Select, Textarea } from "@/components/ui/Form";
 import { LoanCalculationPreview } from "./LoanCalculationPreview";
 
+type InstallmentPeriod = "BULANAN" | "MINGGUAN";
+
 interface LoanTermOption {
   id: string;
   name: string;
   months: number;
+  period: InstallmentPeriod;
   interestRate: number;
 }
 
@@ -38,14 +41,28 @@ export function LoanForm({
   });
 
   const [principal, setPrincipal] = useState("");
+  const [period, setPeriod] = useState<InstallmentPeriod>("BULANAN");
   const [selectedTermId, setSelectedTermId] = useState("");
   const [disbursementDate, setDisbursementDate] = useState(
     toDateInputValue(new Date())
   );
   const [firstDueDate, setFirstDueDate] = useState("");
 
-  const selectedTerm = loanTerms.find((t) => t.id === selectedTermId);
+  // Only offer terms matching the selected installment period.
+  const availableTerms = loanTerms.filter((t) => t.period === period);
   const principalNumber = Number(principal);
+
+  const handlePeriodChange = (value: InstallmentPeriod) => {
+    setPeriod(value);
+    // Reset tenor if the current one belongs to another period.
+    if (
+      selectedTermId &&
+      !loanTerms.some((t) => t.id === selectedTermId && t.period === value)
+    ) {
+      setSelectedTermId("");
+    }
+    setFirstDueDate("");
+  };
 
   const handleDisbursementChange = (value: string) => {
     setDisbursementDate(value);
@@ -54,22 +71,35 @@ export function LoanForm({
       return;
     }
     const d = new Date(value);
-    d.setDate(d.getDate() + 30);
+    if (period === "MINGGUAN") {
+      d.setDate(d.getDate() + 7);
+    } else {
+      d.setDate(d.getDate() + 30);
+    }
     setFirstDueDate(toDateInputValue(d));
   };
 
+  const dueHint =
+    period === "MINGGUAN"
+      ? "Otomatis 7 hari setelah pencairan, dapat diubah"
+      : "Otomatis 30 hari setelah pencairan, dapat diubah";
+
   const preview = useMemo(() => {
-    if (!selectedTerm || !principalNumber || principalNumber <= 0) {
+    const term = loanTerms.find(
+      (t) => t.id === selectedTermId && t.period === period
+    );
+    if (!term || !principalNumber || principalNumber <= 0) {
       return null;
     }
     return (
       <LoanCalculationPreview
         principal={principalNumber}
-        interestRate={selectedTerm.interestRate}
-        tenorMonths={selectedTerm.months}
+        interestRate={term.interestRate}
+        period={term.period}
+        tenorPeriods={term.months}
       />
     );
-  }, [principalNumber, selectedTerm]);
+  }, [principalNumber, selectedTermId, period, loanTerms]);
 
   return (
     <form action={formAction} className="space-y-6">
@@ -115,6 +145,20 @@ export function LoanForm({
           />
         </Field>
 
+        <Field label="Jenis Cicilan" htmlFor="period" required>
+          <Select
+            id="period"
+            name="period"
+            value={period}
+            onChange={(e) =>
+              handlePeriodChange(e.target.value as InstallmentPeriod)
+            }
+          >
+            <option value="BULANAN">Bulanan</option>
+            <option value="MINGGUAN">Mingguan</option>
+          </Select>
+        </Field>
+
         <Field label="Tenor" htmlFor="loanTermId" required error={state.fieldErrors?.loanTermId}>
           <Select
             id="loanTermId"
@@ -124,7 +168,7 @@ export function LoanForm({
             error={!!state.fieldErrors?.loanTermId}
           >
             <option value="">Pilih tenor...</option>
-            {loanTerms.map((t) => (
+            {availableTerms.map((t) => (
               <option key={t.id} value={t.id}>
                 {t.name} — {t.interestRate}%
               </option>
@@ -153,7 +197,7 @@ export function LoanForm({
           htmlFor="firstDueDate"
           required
           error={state.fieldErrors?.firstDueDate}
-          hint="Otomatis 30 hari setelah pencairan, dapat diubah"
+          hint={dueHint}
         >
           <Input
             id="firstDueDate"

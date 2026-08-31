@@ -74,7 +74,7 @@ export default async function SettingsPage() {
         <Card>
           <CardHeader title="Dokumentasi" />
           <ul className="space-y-2 p-5 text-sm text-slate-600">
-            <li>• Skema bunga: <strong>Flat</strong> (pembayaran tetap per bulan)</li>
+            <li>• Skema bunga: <strong>Flat</strong> (pembayaran tetap per periode — bulanan/mingguan)</li>
             <li>• Status cicilan dihitung otomatis dari tanggal</li>
             <li>• Pinjaman otomatis lunas saat semua cicilan dibayar</li>
             <li>• Perubahan tenor tidak mengubah pinjaman lama</li>

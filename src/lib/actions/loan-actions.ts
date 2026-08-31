@@ -22,11 +22,15 @@ export async function createLoan(
   }
   const borrowerId = String(formData.get("borrowerId") ?? "").trim();
   const loanTermId = String(formData.get("loanTermId") ?? "").trim();
+  const periodRaw = String(formData.get("period") ?? "BULANAN").trim();
   const principalRaw = String(formData.get("principalAmount") ?? "").trim();
   const disbursementRaw = String(formData.get("disbursementDate") ?? "").trim();
   const firstDueRaw = String(formData.get("firstDueDate") ?? "").trim();
   const purpose = String(formData.get("purpose") ?? "").trim();
   const notes = String(formData.get("notes") ?? "").trim();
+
+  const period: "BULANAN" | "MINGGUAN" =
+    periodRaw === "MINGGUAN" ? "MINGGUAN" : "BULANAN";
 
   const fieldErrors: Record<string, string> = {};
   if (!borrowerId) fieldErrors.borrowerId = "Pilih peminjam.";
@@ -61,6 +65,9 @@ export async function createLoan(
     if (!term.isActive) {
       return { error: "Tenor yang dipilih sudah dinonaktifkan." };
     }
+    if (term.period !== period) {
+      return { error: "Tenor yang dipilih tidak sesuai dengan jenis cicilan." };
+    }
 
     // Validate borrower exists and is active.
     const borrower = await prisma.borrower.findUnique({
@@ -83,8 +90,8 @@ export async function createLoan(
     }
 
     // Centralized calculation.
-    const calc = calculateLoan(principal, term.interestRate, term.months);
-    const dueDates = generateDueDates(firstDueDate, term.months);
+    const calc = calculateLoan(principal, term.interestRate, period, term.months);
+    const dueDates = generateDueDates(firstDueDate, period, term.months);
 
     const loanCount = await prisma.loan.count();
     const loanNumber = `LN-${String(loanCount + 1).padStart(6, "0")}`;
@@ -99,8 +106,9 @@ export async function createLoan(
           interestRate: calc.interestRate,
           interestAmount: calc.interestAmount,
           totalAmount: calc.totalAmount,
-          monthlyInstallment: calc.monthlyInstallment,
-          termMonths: calc.tenorMonths,
+          monthlyInstallment: calc.installmentAmount,
+          termMonths: calc.tenorPeriods,
+          period,
           disbursementDate,
           firstDueDate,
           purpose: purpose || null,
@@ -109,7 +117,7 @@ export async function createLoan(
         },
       });
 
-      for (let i = 0; i < calc.tenorMonths; i++) {
+      for (let i = 0; i < calc.tenorPeriods; i++) {
         await tx.installment.create({
           data: {
             loanId: loan.id,

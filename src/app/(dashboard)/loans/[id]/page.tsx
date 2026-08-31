@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
-import { formatRupiah, formatDate, formatPercent, formatDateTime } from "@/lib/format";
+import { formatRupiah, formatDate, formatPercent, formatDateTime, installmentPeriodLabel, tenorUnitLabel } from "@/lib/format";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { Card, CardHeader } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
@@ -11,6 +11,7 @@ import { StatCard } from "@/components/ui/StatCard";
 import {
   LoanStatusBadge,
   InstallmentStatusBadge,
+  InstallmentPeriodBadge,
 } from "@/components/StatusBadges";
 import { LoanCancelButton } from "@/components/loan/LoanCancelButton";
 import { InstallmentActions } from "@/components/loan/InstallmentActions";
@@ -68,11 +69,11 @@ export default async function LoanDetailPage({ params }: LoanDetailPageProps) {
     { label: "Total Bunga", value: formatRupiah(loan.interestAmount) },
     { label: "Total Pembayaran", value: formatRupiah(loan.totalAmount) },
     {
-      label: "Cicilan / Bulan",
+      label: `Cicilan / ${installmentPeriodLabel(loan.period)}`,
       value: formatRupiah(loan.monthlyInstallment),
       highlight: true,
     },
-    { label: "Tenor", value: `${loan.termMonths} bulan` },
+    { label: "Tenor", value: `${loan.termMonths} ${tenorUnitLabel(loan.period)}` },
     {
       label: "Tanggal Pencairan",
       value: formatDate(loan.disbursementDate),
@@ -89,6 +90,7 @@ export default async function LoanDetailPage({ params }: LoanDetailPageProps) {
         title={
           <span className="flex items-center gap-3">
             <span className="font-mono">{loan.loanNumber}</span>
+            <InstallmentPeriodBadge period={loan.period} />
             <LoanStatusBadge status={effStatus} />
           </span>
         }
@@ -162,7 +164,7 @@ export default async function LoanDetailPage({ params }: LoanDetailPageProps) {
           value={formatRupiah(loan.interestAmount)}
         />
         <StatCard
-          label="Cicilan / Bulan"
+          label={`Cicilan / ${installmentPeriodLabel(loan.period)}`}
           value={formatRupiah(loan.monthlyInstallment)}
         />
       </div>

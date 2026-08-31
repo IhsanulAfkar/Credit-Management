@@ -188,7 +188,7 @@ export default async function BorrowerDetailPage({
                   <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">Nomor</th>
                   <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">Tanggal</th>
                   <th className="px-5 py-3 text-right text-xs font-semibold uppercase tracking-wide text-slate-500">Pokok</th>
-                  <th className="px-5 py-3 text-right text-xs font-semibold uppercase tracking-wide text-slate-500">Cicilan/Bulan</th>
+                  <th className="px-5 py-3 text-right text-xs font-semibold uppercase tracking-wide text-slate-500">Cicilan</th>
                   <th className="px-5 py-3 text-center text-xs font-semibold uppercase tracking-wide text-slate-500">Progress</th>
                   <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">Status</th>
                   <th className="px-5 py-3 text-right text-xs font-semibold uppercase tracking-wide text-slate-500">Aksi</th>

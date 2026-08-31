@@ -28,6 +28,11 @@ enum InstallmentStatus {
   LUNAS
 }
 
+enum InstallmentPeriod {
+  BULANAN
+  MINGGUAN
+}
+
 model User {
   id            String    @id @default(cuid())
   name          String
@@ -86,36 +91,38 @@ model Borrower {
 }
 
 model LoanTerm {
-  id           String   @id @default(cuid())
+  id           String            @id @default(cuid())
   name         String
-  months       Int
+  months       Int // Number of installments (periods) for loans using this term
+  period       InstallmentPeriod @default(BULANAN)
   interestRate Float
-  isActive     Boolean  @default(true)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  isActive     Boolean           @default(true)
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @updatedAt
   loans        Loan[]
 }
 
 model Loan {
-  id                 String        @id @default(cuid())
-  loanNumber         String        @unique
+  id                 String            @id @default(cuid())
+  loanNumber         String            @unique
   borrowerId         String
-  borrower           Borrower      @relation(fields: [borrowerId], references: [id])
+  borrower           Borrower          @relation(fields: [borrowerId], references: [id])
   principalAmount    Int
   interestRate       Float
   interestAmount     Int
   totalAmount        Int
-  monthlyInstallment Int
-  termMonths         Int
+  monthlyInstallment Int // Per-period installment amount
+  termMonths         Int               // Number of installments (periods)
+  period             InstallmentPeriod @default(BULANAN)
   disbursementDate   DateTime
   firstDueDate       DateTime
   purpose            String?
   notes              String?
-  status             LoanStatus    @default(AKTIF)
-  createdAt          DateTime      @default(now())
-  updatedAt          DateTime      @updatedAt
+  status             LoanStatus        @default(AKTIF)
+  createdAt          DateTime          @default(now())
+  updatedAt          DateTime          @updatedAt
   installments       Installment[]
-  loanTerm           LoanTerm?     @relation(fields: [loanTermId], references: [id])
+  loanTerm           LoanTerm?         @relation(fields: [loanTermId], references: [id])
   loanTermId         String?
 }
 

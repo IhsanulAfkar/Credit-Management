@@ -15,16 +15,20 @@ export async function createLoanTerm(
 ): Promise<TermFormState> {
   const name = String(formData.get("name") ?? "").trim();
   const monthsRaw = String(formData.get("months") ?? "").trim();
+  const periodRaw = String(formData.get("period") ?? "BULANAN").trim();
   const interestRaw = String(formData.get("interestRate") ?? "").trim();
 
   const fieldErrors: Record<string, string> = {};
   if (!name) fieldErrors.name = "Nama tenor wajib diisi.";
-  if (!monthsRaw) fieldErrors.months = "Jumlah bulan wajib diisi.";
+  if (!monthsRaw) fieldErrors.months = "Jumlah periode wajib diisi.";
 
   const months = Number(monthsRaw);
   if (monthsRaw && (!Number.isFinite(months) || months <= 0)) {
-    fieldErrors.months = "Jumlah bulan harus lebih dari 0.";
+    fieldErrors.months = "Jumlah periode harus lebih dari 0.";
   }
+
+  const period: "BULANAN" | "MINGGUAN" =
+    periodRaw === "MINGGUAN" ? "MINGGUAN" : "BULANAN";
 
   const interestRate = Number(interestRaw);
   if (interestRaw && (!Number.isFinite(interestRate) || interestRate < 0)) {
@@ -40,6 +44,7 @@ export async function createLoanTerm(
       data: {
         name,
         months,
+        period,
         interestRate,
         isActive: true,
       },
@@ -59,16 +64,20 @@ export async function updateLoanTerm(
 ): Promise<TermFormState> {
   const name = String(formData.get("name") ?? "").trim();
   const monthsRaw = String(formData.get("months") ?? "").trim();
+  const periodRaw = String(formData.get("period") ?? "BULANAN").trim();
   const interestRaw = String(formData.get("interestRate") ?? "").trim();
 
   const fieldErrors: Record<string, string> = {};
   if (!name) fieldErrors.name = "Nama tenor wajib diisi.";
-  if (!monthsRaw) fieldErrors.months = "Jumlah bulan wajib diisi.";
+  if (!monthsRaw) fieldErrors.months = "Jumlah periode wajib diisi.";
 
   const months = Number(monthsRaw);
   if (monthsRaw && (!Number.isFinite(months) || months <= 0)) {
-    fieldErrors.months = "Jumlah bulan harus lebih dari 0.";
+    fieldErrors.months = "Jumlah periode harus lebih dari 0.";
   }
+
+  const period: "BULANAN" | "MINGGUAN" =
+    periodRaw === "MINGGUAN" ? "MINGGUAN" : "BULANAN";
 
   const interestRate = Number(interestRaw);
   if (interestRaw && (!Number.isFinite(interestRate) || interestRate < 0)) {
@@ -82,7 +91,7 @@ export async function updateLoanTerm(
   try {
     await prisma.loanTerm.update({
       where: { id },
-      data: { name, months, interestRate },
+      data: { name, months, period, interestRate },
     });
   } catch {
     return { error: "Gagal memperbarui tenor. Silakan coba lagi." };

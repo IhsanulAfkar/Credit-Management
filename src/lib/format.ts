@@ -1,6 +1,18 @@
+import type { InstallmentPeriod } from "@/generated/prisma/enums";
+
 /**
  * Formatting helpers for Indonesian business UI.
  */
+
+/** Capitalized installment period unit for labels, e.g. "Cicilan / Bulan". */
+export function installmentPeriodLabel(period: InstallmentPeriod): string {
+  return period === "MINGGUAN" ? "Minggu" : "Bulan";
+}
+
+/** Lowercase unit for tenor text, e.g. "12 bulan" or "8 minggu". */
+export function tenorUnitLabel(period: InstallmentPeriod): string {
+  return period === "MINGGUAN" ? "minggu" : "bulan";
+}
 
 /** Format a number as Indonesian Rupiah, e.g. Rp10.000.000 */
 export function formatRupiah(amount: number): string {

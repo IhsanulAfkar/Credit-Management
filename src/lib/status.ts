@@ -1,8 +1,18 @@
-import type { BorrowerStatus, InstallmentStatus, LoanStatus } from "@/generated/prisma/enums";
+import type { BorrowerStatus, InstallmentPeriod, InstallmentStatus, LoanStatus } from "@/generated/prisma/enums";
 
 export const BORROWER_STATUS_LABEL: Record<BorrowerStatus, string> = {
   AKTIF: "Aktif",
   TIDAK_AKTIF: "Tidak Aktif",
+};
+
+export const INSTALLMENT_PERIOD_LABEL: Record<InstallmentPeriod, string> = {
+  BULANAN: "Bulanan",
+  MINGGUAN: "Mingguan",
+};
+
+export const INSTALLMENT_PERIOD_STYLE: Record<InstallmentPeriod, string> = {
+  BULANAN: "bg-slate-100 text-slate-700 ring-slate-500/20",
+  MINGGUAN: "bg-indigo-50 text-indigo-700 ring-indigo-600/20",
 };
 
 export const LOAN_STATUS_LABEL: Record<LoanStatus, string> = {

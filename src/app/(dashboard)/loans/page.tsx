@@ -5,7 +5,7 @@ import { PageHeader } from "@/components/ui/PageHeader";
 import { Card } from "@/components/ui/Card";
 import { EmptyState } from "@/components/ui/States";
 import { Pagination } from "@/components/ui/Pagination";
-import { LoanStatusBadge } from "@/components/StatusBadges";
+import { LoanStatusBadge, InstallmentPeriodBadge } from "@/components/StatusBadges";
 import { computeLoanStatus } from "@/lib/loan-status";
 import { ProgressBar } from "@/components/ui/ProgressBar";
 
@@ -158,6 +158,9 @@ export default async function LoansPage({ searchParams }: LoansPageProps) {
                       <tr key={loan.id} className="hover:bg-slate-50">
                         <td className="whitespace-nowrap px-5 py-3 text-sm font-medium text-indigo-600">
                           <Link href={`/loans/${loan.id}`}>{loan.loanNumber}</Link>
+                          <div className="mt-1">
+                            <InstallmentPeriodBadge period={loan.period} />
+                          </div>
                         </td>
                         <td className="whitespace-nowrap px-5 py-3 text-sm text-slate-900">
                           {loan.borrower.name}

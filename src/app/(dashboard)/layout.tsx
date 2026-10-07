@@ -1,4 +1,6 @@
+import { FloatingAIChat } from '@/components/chat';
 import { auth } from '@/lib/auth';
+import Providers from '@/provider';
 import { NextPage } from 'next'
 import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
@@ -13,7 +15,12 @@ const Layout = async ({ children }: Props) => {
     headers: await headers(),
   });
   if (!session) redirect('/login')
-  return <>{children}</>
+  return <>
+    <Providers>
+      {children}
+      <FloatingAIChat />
+    </Providers>
+  </>
 }
 
 export default Layout
